@@ -24,8 +24,8 @@ end
 --levels
 function getPanelData(x1, y1, x2, y2)
   --returns a table with four coordinates, to turn a the given points of a line into a polygon
-  local panel = {}
   local windowCenterX, windowcCenterY = WINDOWWIDTH/2, WINDOWHEIGHT/2
+  local panel = {}
   panel.x1, panel.y1, panel.x2, panel.y2 = x1, y1, x2, y2
   local angle1 = math.atan2(panel.y1 - windowcCenterY, panel.x1 - windowCenterX)
   panel.x4 = x1 + PANELWIDTH * math.cos(angle1)
@@ -34,6 +34,26 @@ function getPanelData(x1, y1, x2, y2)
   panel.x3 = x2 + PANELWIDTH * math.cos(angle2)
   panel.y3 = y2 + PANELWIDTH * math.sin(angle2)
   return panel
+end
+
+function buildFence(world, polygon)
+  --creates the fence panels given the coordinates of a polygon
+  for i=1, #polygon-1 do
+    local newPanel = Wall:new(world, getPanelData(polygon[i].x, polygon[i].y, polygon[i+1].x, polygon[i+1].y))
+  end
+  local newPanel = Wall:new(world, getPanelData(polygon[#polygon].x, polygon[#polygon].y, polygon[1].x, polygon[1].y))
+end
+
+function getDrawableFence(polygon)
+  --returns a list of points from a polygon object that love.graphics.draw() can accept
+  local fence = {}
+  for i=1, #polygon do
+      table.insert(fence, polygon[i].x)
+      table.insert(fence, polygon[i].y)
+  end
+  table.insert(fence, polygon[1].x)
+  table.insert(fence, polygon[1].y)
+  return fence
 end
 
 
