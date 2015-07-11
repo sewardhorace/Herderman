@@ -56,11 +56,6 @@ function getDrawableFence(polygon)
   return fence
 end
 
-
-
-
-
-
 --player
 function Body:playerUpdate(dt)
   if love.keyboard.isDown("right", "left") then
@@ -78,9 +73,66 @@ function Body:playerUpdate(dt)
   else
     self.body:setLinearVelocity(0,0)
   end
+end
 
-  if love.keyboard.isDown(" ") then
-    self.body:setPosition(650/2, 650/2)
-    self.body:setLinearVelocity(0,0)
+--sheep
+function Body:applyImpulseForward(dt)
+  self.body:applyLinearImpulse(math.cos(self.body:getAngle())*(self.speed*dt), math.sin(self.body:getAngle())*(self.speed*dt))
+end
+
+function Body:flee(otherBody, dt)
+  self.body:setAngle(math.atan2(self.body:getY() - otherBody.body:getY(), self.body:getX() - otherBody.body:getX()))
+  self:applyImpulseForward(dt)
+end
+
+
+function doesIntersect(Ax, Ay, Bx, By, Ex, Ey, Fx, Fy)
+  --returns true if two lines intersect (given coordinates of endpoints)
+  local cross1_1 = (Fx-Ex)*(Ay-Fy)-(Fy-Ey)*(Ax-Fx)
+  local cross1_2 = (Fx-Ex)*(By-Fy)-(Fy-Ey)*(Bx-Fx)
+  local cross2_1 = (Bx-Ax)*(Ey-By)-(By-Ay)*(Ex-Bx)
+  local cross2_2 = (Bx-Ax)*(Fy-By)-(By-Ay)*(Fx-Bx)
+  if (cross1_1 > 0 and cross1_2 > 0) or (cross1_1 < 0 and cross1_2 < 0) or (cross2_1 > 0 and cross2_2 > 0) or (cross2_1 < 0 and cross2_2 < 0) then
+    return false
+  else
+    return true
+  end
+end
+
+function Body:pathBlocked(polygon)
+  --returns true if a short distance (length of radius) in front of a body intersects the boundaries of a polygon
+  local path = { Ax = self.body:getX(), Ay = self.body:getY() }
+  local angle = self.body:getAngle()
+  local reach = self.shape:getRadius()*2
+  path.Bx = path.Ax + reach * math.cos(angle)
+  path.By = path.Ay + reach * math.sin(angle)
+  if doesIntersect(path.Ax, path.Ay, path.Bx, path.By, polygon[1].x, polygon[1].y, polygon[#polygon].x, polygon[#polygon].y) then
+    return true
+  end
+  for i=1, #polygon - 1 do
+    if doesIntersect(path.Ax, path.Ay, path.Bx, path.By, polygon[i].x, polygon[i].y, polygon[i+1].x, polygon[i+1].y) then
+      return true
+    end
+  end
+  return false
+end
+
+function Body:getBestAngle(otherBody, polygon, dt)
+  self.body:setAngle(self:getDirection(otherBody)+math.pi/2)
+  --self:rotateInRadians(math.pi/2)
+
+  if self:pathBlocked(polygon) then
+    self.body:setAngle(self.body:getAngle()+math.pi)
+    --self:rotateInRadians(math.pi)
+
+    --while not self:pathBlocked(polygon) do
+      --self.body:applyTorque(dt)
+    --end
+      --self.body:applyTorque(-dt)
+  --else
+    --while not self:pathBlocked(polygon) do
+      --self.body:applyTorque(-dt)
+    --end
+      --self.body:applyTorque(dt)
   end
 end
