@@ -78,7 +78,8 @@ end
 function Body:grabSheep(allSheep)
   for i=1, #allSheep do
     if love.physics.getDistance(allSheep[i].fixture, self.fixture) < 50 then
-      allSheep[i].body:setActive(false)
+      --allSheep[i].body:setActive(false)
+      allSheep[i].isFree = false
       break
     end
   end
@@ -142,14 +143,6 @@ function Body:sheepUpdate(player, fencePoly, dt)
   elseif love.physics.getDistance(self.fixture, player.fixture) < 150 then
     self:flee(player, dt)
   end
-
-  function ooops(key)
-    if key == " " and love.physics.getDistance(self.fixture, player.fixture) < 50 then
-      if self.body:isActive() then
-        self.body:setActive(false)
-      end
-    end
-  end
 end
 
 function sheepStart(world, spawnCoordinates)
@@ -160,6 +153,7 @@ function sheepStart(world, spawnCoordinates)
     newSheep.body:setAngularDamping(10)
     newSheep.fixture:setRestitution(0.9)
     newSheep.speed = SPEED
+    newSheep.isFree = true
     table.insert(allSheep, newSheep)
   end
   return allSheep
@@ -167,6 +161,8 @@ end
 
 function updateAllSheep(allSheep, player, fencePoly, dt)
   for i=1, #allSheep do
-    allSheep[i]:sheepUpdate(player, fencePoly, dt)
+    if allSheep[i].isFree then
+      allSheep[i]:sheepUpdate(player, fencePoly, dt)
+    end
   end
 end

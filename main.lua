@@ -46,9 +46,13 @@ function love.draw()
   love.graphics.line(getDrawableFence(fencePoly))
 
   --sheep
-  love.graphics.setColor(200, 200, 200)
   --love.graphics.circle("fill", sheep.body:getX(), sheep.body:getY(), sheep.shape:getRadius())
   for i=1, #allSheep do
+    if allSheep[i].isFree then
+      love.graphics.setColor(200, 200, 200)
+    else
+      love.graphics.setColor(100, 200, 100)
+    end
     love.graphics.draw(allSheep[i].img, allSheep[i].body:getX(), allSheep[i].body:getY(),allSheep[i].body:getAngle()+math.pi,1, 1, allSheep[i].img:getWidth()/ 2, allSheep[i].img:getHeight()/2)
   end
 
