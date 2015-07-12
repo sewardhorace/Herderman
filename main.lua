@@ -4,46 +4,39 @@ require "levels"
 function love.load()
   --initial graphics setup
   love.graphics.setBackgroundColor(100, 160, 100)
-  love.window.setMode(WINDOWWIDTH, WINDOWHEIGHT)
+  sheepImg = love.graphics.newImage('assets/sheep.png')
+  playerImg = love.graphics.newImage('assets/farmer.png')
 
   world = love.physics.newWorld(0, 0, true) -- 0 horizontal gravity, 0 vertical gravity
 
-  fencePoly = LEVELS[1].FENCE
-  buildFence(world, fencePoly)
-
   player = Body:new(world, WINDOWWIDTH/2, WINDOWHEIGHT/2)
   player.speed, player.turning = SPEED, TURNING
+  player.isAlive = true --unused
+  player.img = playerImg
 
-  sheep = Body:new(world, 400, 400)
-  sheep.body:setLinearDamping(10)
-  sheep.body:setAngularDamping(10)
-  sheep.fixture:setRestitution(0.9)
-  sheep.speed = SPEED
+  level = 2
 
-  player.img = love.graphics.newImage('assets/farmer.png')
-  sheep.img = love.graphics.newImage('assets/sheep.png')
+  fencePoly = LEVELS[level].FENCE
+  buildFence(world, fencePoly)
+
+  allSheep = sheepStart(world, LEVELS[level].SPAWN_COORDINATES)
+  for i=1, #allSheep do
+    allSheep[i].img = sheepImg
+  end
+
+
 end
 
 function love.update(dt)
   world:update(dt)
   player:playerUpdate(dt)
-
-  if love.physics.getDistance(sheep.fixture, player.fixture) < 100 then
-    if sheep:pathBlocked(fencePoly) then
-      sheep:getBestAngle(player, fencePoly, dt)
-    else
-      sheep:applyImpulseForward(dt)
-    end
-  elseif love.physics.getDistance(sheep.fixture, player.fixture) < 150 then
-    sheep:flee(player, dt)
-  end
+  updateAllSheep(allSheep, player, fencePoly, dt)
 
 end
 
 function love.draw()
 
   love.graphics.setColor(0,0,0)
-  love.graphics.print(sheep.speed, 20, 20)
   --player
   --love.graphics.circle("fill", player.body:getX(), player.body:getY(), player.shape:getRadius())
   love.graphics.draw(player.img, player.body:getX(), player.body:getY(), player.body:getAngle(),1, 1, player.img:getWidth()/ 2, player.img:getHeight() / 2)
@@ -55,7 +48,14 @@ function love.draw()
   --sheep
   love.graphics.setColor(200, 200, 200)
   --love.graphics.circle("fill", sheep.body:getX(), sheep.body:getY(), sheep.shape:getRadius())
-  love.graphics.draw(sheep.img, sheep.body:getX(), sheep.body:getY(),sheep.body:getAngle()+math.pi,1, 1, sheep.img:getWidth()/ 2, sheep.img:getHeight()/2)
+  for i=1, #allSheep do
+    love.graphics.draw(allSheep[i].img, allSheep[i].body:getX(), allSheep[i].body:getY(),allSheep[i].body:getAngle()+math.pi,1, 1, allSheep[i].img:getWidth()/ 2, allSheep[i].img:getHeight()/2)
+  end
 
+end
 
+function love.keypressed(key)
+  if key == " " then
+    player:grabSheep(allSheep)
+  end
 end

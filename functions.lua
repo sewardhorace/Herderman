@@ -75,6 +75,15 @@ function Body:playerUpdate(dt)
   end
 end
 
+function Body:grabSheep(allSheep)
+  for i=1, #allSheep do
+    if love.physics.getDistance(allSheep[i].fixture, self.fixture) < 50 then
+      allSheep[i].body:setActive(false)
+      break
+    end
+  end
+end
+
 --sheep
 function Body:applyImpulseForward(dt)
   self.body:applyLinearImpulse(math.cos(self.body:getAngle())*(self.speed*dt), math.sin(self.body:getAngle())*(self.speed*dt))
@@ -84,7 +93,6 @@ function Body:flee(otherBody, dt)
   self.body:setAngle(math.atan2(self.body:getY() - otherBody.body:getY(), self.body:getX() - otherBody.body:getX()))
   self:applyImpulseForward(dt)
 end
-
 
 function doesIntersect(Ax, Ay, Bx, By, Ex, Ey, Fx, Fy)
   --returns true if two lines intersect (given coordinates of endpoints)
@@ -119,20 +127,46 @@ end
 
 function Body:getBestAngle(otherBody, polygon, dt)
   self.body:setAngle(self:getDirection(otherBody)+math.pi/2)
-  --self:rotateInRadians(math.pi/2)
-
   if self:pathBlocked(polygon) then
     self.body:setAngle(self.body:getAngle()+math.pi)
-    --self:rotateInRadians(math.pi)
+  end
+end
 
-    --while not self:pathBlocked(polygon) do
-      --self.body:applyTorque(dt)
-    --end
-      --self.body:applyTorque(-dt)
-  --else
-    --while not self:pathBlocked(polygon) do
-      --self.body:applyTorque(-dt)
-    --end
-      --self.body:applyTorque(dt)
+function Body:sheepUpdate(player, fencePoly, dt)
+  if love.physics.getDistance(self.fixture, player.fixture) < 100 then
+    if self:pathBlocked(fencePoly) then
+      self:getBestAngle(player, fencePoly, dt)
+    else
+      self:applyImpulseForward(dt)
+    end
+  elseif love.physics.getDistance(self.fixture, player.fixture) < 150 then
+    self:flee(player, dt)
+  end
+
+  function ooops(key)
+    if key == " " and love.physics.getDistance(self.fixture, player.fixture) < 50 then
+      if self.body:isActive() then
+        self.body:setActive(false)
+      end
+    end
+  end
+end
+
+function sheepStart(world, spawnCoordinates)
+  local allSheep = {}
+  for i=1, #spawnCoordinates do
+    newSheep = Body:new(world, spawnCoordinates[i].x, spawnCoordinates[i].y)
+    newSheep.body:setLinearDamping(10)
+    newSheep.body:setAngularDamping(10)
+    newSheep.fixture:setRestitution(0.9)
+    newSheep.speed = SPEED
+    table.insert(allSheep, newSheep)
+  end
+  return allSheep
+end
+
+function updateAllSheep(allSheep, player, fencePoly, dt)
+  for i=1, #allSheep do
+    allSheep[i]:sheepUpdate(player, fencePoly, dt)
   end
 end
