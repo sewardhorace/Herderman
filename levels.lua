@@ -2,8 +2,10 @@ LEVELS = {}
 
 LEVEL1 = {
   STARTING_TIME = 10,
-  PLAYER_START_X = 100,
-  PLAYER_START_Y = 250,
+  PLAYER_START = {
+    X = 100,
+    Y = 250
+  },
 
   --sheep spawn coordinates
   SPAWN_COORDINATES = {
@@ -22,8 +24,10 @@ table.insert(LEVELS, LEVEL1)
 
 LEVEL2 = {
   STARTING_TIME = 10,
-  PLAYER_START_X = 200,
-  PLAYER_START_Y = 200,
+  PLAYER_START = {
+    X = 200,
+    Y = 200
+  },
 
   --sheep spawn coordinates
   SPAWN_COORDINATES = {

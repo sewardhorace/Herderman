@@ -57,21 +57,30 @@ function getDrawableFence(polygon)
 end
 
 --player
-function Body:playerUpdate(dt)
-  if love.keyboard.isDown("right", "left") then
-    if love.keyboard.isDown("right") then
-      self.body:setAngularVelocity(self.turning*dt)
-    else
-      self.body:setAngularVelocity(-self.turning*dt)
-    end
-  else
-    self.body:setAngularVelocity(0)
-  end
+function loadPlayer(world, spawnCoordinates)
+  local player = Body:new(world, spawnCoordinates.X, spawnCoordinates.Y)
+  player.speed, player.turning = SPEED, TURNING
+  player.isAlive = true --unused
+  return player
+end
 
-  if love.keyboard.isDown("up") then
-    self.body:setLinearVelocity(math.cos(self.body:getAngle())*(self.speed*dt), math.sin(self.body:getAngle())*(self.speed*dt))
-  else
-    self.body:setLinearVelocity(0,0)
+function Body:playerUpdate(dt)
+  if player.isAlive then
+    if love.keyboard.isDown("right", "left") then
+      if love.keyboard.isDown("right") then
+        self.body:setAngularVelocity(self.turning*dt)
+      else
+        self.body:setAngularVelocity(-self.turning*dt)
+      end
+    else
+      self.body:setAngularVelocity(0)
+    end
+
+    if love.keyboard.isDown("up") then
+      self.body:setLinearVelocity(math.cos(self.body:getAngle())*(self.speed*dt), math.sin(self.body:getAngle())*(self.speed*dt))
+    else
+      self.body:setLinearVelocity(0,0)
+    end
   end
 end
 
@@ -83,6 +92,11 @@ function Body:grabSheep(allSheep)
       break
     end
   end
+end
+
+function Body:playerStart(spawnCoordinates)
+  self.body:setX(spawnCoordinates.X)
+  self.body:setY(spawnCoordinates.Y)
 end
 
 --sheep
@@ -165,4 +179,14 @@ function updateAllSheep(allSheep, player, fencePoly, dt)
       allSheep[i]:sheepUpdate(player, fencePoly, dt)
     end
   end
+end
+
+function numberFreeSheep(allSheep)
+  local count = 0
+  for i=1, #allSheep do
+    if allSheep[i].isFree then
+      count = count + 1
+    end
+  end
+  return count
 end
