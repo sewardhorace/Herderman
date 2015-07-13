@@ -22,6 +22,24 @@ function Body:getDirection(otherBody)
 end
 
 --levels
+function loadHighScores(LEVELS)
+  if not love.filesystem.exists("scores.lua") then
+    local startingScores = ""
+    for i=1, #LEVELS do
+      startingScores = startingScores .. tostring(LEVELS[i].STARTING_TIME) .. "\n"
+    end
+    love.filesystem.write("scores.lua", startingScores)
+  end
+  --populate highscores
+  local highscores = {}
+  for lines in love.filesystem.lines("scores.lua") do
+    table.insert(highscores, lines)
+  end
+  for i=1, #LEVELS do
+    LEVELS[i].highscore = tonumber(highscores[i])
+  end
+end
+
 function getPanelData(x1, y1, x2, y2)
   --returns a table with four coordinates, to turn a the given points of a line into a polygon
   local windowCenterX, windowcCenterY = WINDOWWIDTH/2, WINDOWHEIGHT/2
@@ -56,12 +74,60 @@ function getDrawableFence(polygon)
   return fence
 end
 
+function resetTime()
+  local time = {}
+  time.timer = 0
+  time.timeStart = false
+  return time
+end
+
+function loadLevel(world, level, LEVELS)
+  --set time
+  local time = resetTime()
+  --construct level
+  local fencePoly = LEVELS[level].FENCE
+  buildFence(world, fencePoly)
+
+  return time, fencePoly
+end
+
+function updateTimer(time, allSheep, player, level)
+  if time.timeStart == false then
+    --timer starts when player starts moving
+    if love.keyboard.isDown('up') then
+      time.stime = love.timer.getTime()
+      time.timeStart = true
+    end
+  elseif numberFreeSheep(allSheep) > 0 and player.isAlive then
+    time.etime = love.timer.getTime()
+    time.timer = time.etime - time.stime
+  end
+
+  if level.STARTING_TIME - time.timer < 0 then
+    time.timer = level.STARTING_TIME
+    player.isAlive = false
+  end
+
+  if numberFreeSheep(allSheep) == 0 then
+    if tonumber(level.highscore) > time.timer then
+      level.highscore = time.timer
+    end
+  end
+end
+
 --player
-function loadPlayer(world, spawnCoordinates)
+function loadPlayer(world, spawnCoordinates, img)
   local player = Body:new(world, spawnCoordinates.X, spawnCoordinates.Y)
   player.speed, player.turning = SPEED, TURNING
-  player.isAlive = true --unused
+  player.isAlive = true
+  player.img = img
   return player
+end
+
+function Body:resetPlayer(spawnCoordinates)
+  self.isAlive = true
+  self.body:setAngle(0)
+  self.body:setPosition(spawnCoordinates.X, spawnCoordinates.Y)
 end
 
 function Body:playerUpdate(dt)
@@ -86,7 +152,7 @@ end
 
 function Body:grabSheep(allSheep)
   for i=1, #allSheep do
-    if love.physics.getDistance(allSheep[i].fixture, self.fixture) < 50 then
+    if love.physics.getDistance(allSheep[i].fixture, self.fixture) < 50 and allSheep[i].isFree then
       --allSheep[i].body:setActive(false)
       allSheep[i].isFree = false
       break
@@ -159,7 +225,7 @@ function Body:sheepUpdate(player, fencePoly, dt)
   end
 end
 
-function sheepStart(world, spawnCoordinates)
+function sheepStart(world, spawnCoordinates, img)
   local allSheep = {}
   for i=1, #spawnCoordinates do
     newSheep = Body:new(world, spawnCoordinates[i].x, spawnCoordinates[i].y)
@@ -168,6 +234,7 @@ function sheepStart(world, spawnCoordinates)
     newSheep.fixture:setRestitution(0.9)
     newSheep.speed = SPEED
     newSheep.isFree = true
+    newSheep.img = img
     table.insert(allSheep, newSheep)
   end
   return allSheep
