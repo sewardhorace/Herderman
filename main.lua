@@ -10,12 +10,9 @@ function love.load()
   world = love.physics.newWorld(0, 0, true)
   loadHighScores(LEVELS)
 
-  level = 2
+  level = 1
 
-  time, fencePoly = loadLevel(world, level, LEVELS)
-  player = loadPlayer(world, LEVELS[level].PLAYER_START, playerImg)
-  allSheep = loadSheep(world, LEVELS[level].SPAWN_COORDINATES, sheepImg)
-
+  time, fencePoly, player, allSheep = loadLevel(world, LEVELS[level], playerImg, sheepImg)
 end
 
 function love.update(dt)
@@ -25,6 +22,7 @@ function love.update(dt)
   updateAllSheep(allSheep, player, fencePoly, dt)
 
   resetLevel(time, allSheep, player, LEVELS[level])
+
 end
 
 function love.draw()

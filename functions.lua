@@ -79,17 +79,21 @@ function resetTime(time)
   time.timeStart = false
 end
 
-function loadLevel(world, level, LEVELS)
+function loadLevel(world, level, playerImg, sheepImg)
   --set time
   local time = {}
   time.timer = 0
   time.timeStart = false
 
   --construct level
-  local fencePoly = LEVELS[level].FENCE
+  local fencePoly = level.FENCE
   buildFence(world, fencePoly)
 
-  return time, fencePoly
+  player = loadPlayer(world, level.PLAYER_START, playerImg)
+
+  allSheep = loadSheep(world, level.SPAWN_COORDINATES, sheepImg)
+
+  return time, fencePoly, player, allSheep
 end
 
 function resetLevel(time, allSheep, player, level)
