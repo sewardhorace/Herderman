@@ -4,8 +4,8 @@ require "levels"
 function love.load()
   --initial graphics setup
   love.graphics.setBackgroundColor(100, 160, 100)
-  sheepImg = love.graphics.newImage('assets/sheep.png')
-  playerImg = love.graphics.newImage('assets/farmer.png')
+  sheepImg = love.graphics.newImage('assets/sheep2.png')
+  playerImg = love.graphics.newImage('assets/farmer2.png')
 
   world = love.physics.newWorld(0, 0, true)
   loadHighScores(LEVELS)
@@ -58,9 +58,6 @@ function love.draw()
     love.graphics.print("Press 'n' to advance to the next level", love.graphics.getWidth()-250, 100)
   end
 
-  --player
-  love.graphics.draw(player.img, player.body:getX(), player.body:getY(), player.body:getAngle(),1, 1, player.img:getWidth()/ 2, player.img:getHeight() / 2)
-
   --sheep
   for i=1, #allSheep do
     if allSheep[i].isFree then
@@ -68,8 +65,13 @@ function love.draw()
     else
       love.graphics.setColor(100, 200, 100)
     end
-    love.graphics.draw(allSheep[i].img, allSheep[i].body:getX(), allSheep[i].body:getY(),allSheep[i].body:getAngle()+math.pi,1, 1, allSheep[i].img:getWidth()/ 2, allSheep[i].img:getHeight()/2)
+    love.graphics.draw(allSheep[i].img, allSheep[i].body:getX(), allSheep[i].body:getY(),allSheep[i].body:getAngle(),1.25, 1.25, allSheep[i].img:getWidth()/ 2, allSheep[i].img:getHeight()/2)
   end
+
+
+  --player
+  love.graphics.setColor(255,255,255)
+  love.graphics.draw(player.img, player.body:getX(), player.body:getY(), player.body:getAngle(),1.25, 1.25, player.img:getWidth()/ 2, player.img:getHeight() / 2)
 end
 
 function love.keypressed(key)
