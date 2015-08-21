@@ -23,6 +23,17 @@ function love.update(dt)
 
   resetLevel(time, allSheep, player, LEVELS[level])
 
+  if numberFreeSheep(allSheep) == 0 then
+    if love.keyboard.isDown("n") then
+      level = level + 1
+      resetTime(time)
+      player:resetPlayer(LEVELS[level].PLAYER_START)
+      allSheep = loadSheep(world, LEVELS[level].SPAWN_COORDINATES, sheepImg)
+      fencePoly = LEVELS[level].FENCE
+      buildFence(world, fencePoly)
+    end
+  end
+
 end
 
 function love.draw()

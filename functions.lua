@@ -55,6 +55,11 @@ function getPanelData(x1, y1, x2, y2)
 end
 
 function buildFence(world, polygon)
+  for i, body in ipairs(world:getBodyList()) do
+    if body:getType() == "static" then
+      body:destroy()
+    end
+  end
   --creates the fence panels given the coordinates of a polygon
   for i=1, #polygon-1 do
     local newPanel = Wall:new(world, getPanelData(polygon[i].x, polygon[i].y, polygon[i+1].x, polygon[i+1].y))
