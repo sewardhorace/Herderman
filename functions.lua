@@ -160,11 +160,6 @@ function Body:grabSheep(allSheep)
   end
 end
 
-function Body:playerStart(spawnCoordinates)
-  self.body:setX(spawnCoordinates.X)
-  self.body:setY(spawnCoordinates.Y)
-end
-
 --sheep
 function Body:applyImpulseForward(dt)
   self.body:applyLinearImpulse(math.cos(self.body:getAngle())*(self.speed*dt), math.sin(self.body:getAngle())*(self.speed*dt))
