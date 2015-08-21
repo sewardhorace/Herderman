@@ -171,11 +171,13 @@ function Body:updatePlayer(dt)
 end
 
 function Body:grabSheep(allSheep)
-  for i=1, #allSheep do
-    if love.physics.getDistance(allSheep[i].fixture, self.fixture) < 50 and allSheep[i].isFree then
-      --allSheep[i].body:setActive(false)
-      allSheep[i].isFree = false
-      break
+  if self.isAlive then
+    for i=1, #allSheep do
+      if love.physics.getDistance(allSheep[i].fixture, self.fixture) < 50 and allSheep[i].isFree then
+        --allSheep[i].body:setActive(false)
+        allSheep[i].isFree = false
+        break
+      end
     end
   end
 end

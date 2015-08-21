@@ -54,7 +54,8 @@ function love.draw()
   end
   if numberFreeSheep(allSheep) == 0 then
     love.graphics.print(string.format("Caught %i sheep in %g seconds!", #allSheep, time.timer), love.graphics.getWidth()-250, 80)
-    love.graphics.print("Press 'r' to restart", love.graphics.getWidth()-150, 100)
+    love.graphics.print("Press 'r' to restart", love.graphics.getWidth()-150, 120)
+    love.graphics.print("Press 'n' to advance to the next level", love.graphics.getWidth()-250, 100)
   end
 
   --player
@@ -69,7 +70,6 @@ function love.draw()
     end
     love.graphics.draw(allSheep[i].img, allSheep[i].body:getX(), allSheep[i].body:getY(),allSheep[i].body:getAngle()+math.pi,1, 1, allSheep[i].img:getWidth()/ 2, allSheep[i].img:getHeight()/2)
   end
-
 end
 
 function love.keypressed(key)
