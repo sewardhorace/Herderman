@@ -14,21 +14,21 @@ function love.load()
 
   time, fencePoly = loadLevel(world, level, LEVELS)
   player = loadPlayer(world, LEVELS[level].PLAYER_START, playerImg)
-  allSheep = sheepStart(world, LEVELS[level].SPAWN_COORDINATES, sheepImg)
+  allSheep = loadSheep(world, LEVELS[level].SPAWN_COORDINATES, sheepImg)
 
 end
 
 function love.update(dt)
   world:update(dt)
   updateTimer(time, allSheep, player, LEVELS[level])
-  player:playerUpdate(dt)
+  player:updatePlayer(dt)
   updateAllSheep(allSheep, player, fencePoly, dt)
 
   if not player.isAlive or numberFreeSheep(allSheep) == 0 then
     if love.keyboard.isDown("r") then
       time = resetTime()
       player:resetPlayer(LEVELS[level].PLAYER_START)
-      allSheep = sheepStart(world, LEVELS[level].SPAWN_COORDINATES, sheepImg)
+      allSheep = loadSheep(world, LEVELS[level].SPAWN_COORDINATES, sheepImg)
     end
   end
 

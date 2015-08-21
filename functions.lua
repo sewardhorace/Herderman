@@ -130,7 +130,7 @@ function Body:resetPlayer(spawnCoordinates)
   self.body:setPosition(spawnCoordinates.X, spawnCoordinates.Y)
 end
 
-function Body:playerUpdate(dt)
+function Body:updatePlayer(dt)
   if player.isAlive then
     if love.keyboard.isDown("right", "left") then
       if love.keyboard.isDown("right") then
@@ -208,7 +208,7 @@ function Body:getBestAngle(otherBody, polygon, dt)
   end
 end
 
-function Body:sheepUpdate(player, fencePoly, dt)
+function Body:updateSheep(player, fencePoly, dt)
   if love.physics.getDistance(self.fixture, player.fixture) < 100 then
     if self:pathBlocked(fencePoly) then
       self:getBestAngle(player, fencePoly, dt)
@@ -220,7 +220,7 @@ function Body:sheepUpdate(player, fencePoly, dt)
   end
 end
 
-function sheepStart(world, spawnCoordinates, img)
+function loadSheep(world, spawnCoordinates, img)
   local allSheep = {}
   for i=1, #spawnCoordinates do
     newSheep = Body:new(world, spawnCoordinates[i].x, spawnCoordinates[i].y)
@@ -238,7 +238,7 @@ end
 function updateAllSheep(allSheep, player, fencePoly, dt)
   for i=1, #allSheep do
     if allSheep[i].isFree then
-      allSheep[i]:sheepUpdate(player, fencePoly, dt)
+      allSheep[i]:updateSheep(player, fencePoly, dt)
     end
   end
 end
