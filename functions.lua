@@ -74,21 +74,32 @@ function getDrawableFence(polygon)
   return fence
 end
 
-function resetTime()
-  local time = {}
+function resetTime(time)
   time.timer = 0
   time.timeStart = false
-  return time
 end
 
 function loadLevel(world, level, LEVELS)
   --set time
-  local time = resetTime()
+  local time = {}
+  time.timer = 0
+  time.timeStart = false
+
   --construct level
   local fencePoly = LEVELS[level].FENCE
   buildFence(world, fencePoly)
 
   return time, fencePoly
+end
+
+function resetLevel(time, allSheep, player, level)
+  if not player.isAlive or numberFreeSheep(allSheep) == 0 then
+    if love.keyboard.isDown("r") then
+      resetTime(time)
+      player:resetPlayer(level.PLAYER_START)
+      resetAllSheep(allSheep, level.SPAWN_COORDINATES)
+    end
+  end
 end
 
 function updateTimer(time, allSheep, player, level)
@@ -233,6 +244,18 @@ function loadSheep(world, spawnCoordinates, img)
     table.insert(allSheep, newSheep)
   end
   return allSheep
+end
+
+function Body:resetSheep(spawnCoordinates)
+  self.isFree = true
+  self.body:setAngle(0)
+  self.body:setPosition(spawnCoordinates.x, spawnCoordinates.y)
+end
+
+function resetAllSheep(allSheep, spawnCoordinates)
+  for i=1, #allSheep do
+    allSheep[i]:resetSheep(spawnCoordinates[i])
+  end
 end
 
 function updateAllSheep(allSheep, player, fencePoly, dt)
