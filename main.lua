@@ -24,7 +24,7 @@ function love.update(dt)
   resetLevel(time, allSheep, player, LEVELS[level])
 
   if numberFreeSheep(allSheep) == 0 then
-    if love.keyboard.isDown("n") then
+    if love.keyboard.isDown("n") and level == 1 then
       level = level + 1
       resetTime(time)
       player:resetPlayer(LEVELS[level].PLAYER_START)
@@ -55,7 +55,9 @@ function love.draw()
   if numberFreeSheep(allSheep) == 0 then
     love.graphics.print(string.format("Caught %i sheep in %g seconds!", #allSheep, time.timer), love.graphics.getWidth()-250, 80)
     love.graphics.print("Press 'r' to restart", love.graphics.getWidth()-150, 120)
-    love.graphics.print("Press 'n' to advance to the next level", love.graphics.getWidth()-250, 100)
+    if level == 1 then
+      love.graphics.print("Press 'n' to advance to the next level", love.graphics.getWidth()-250, 100)
+    end
   end
 
   --sheep

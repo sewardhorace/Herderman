@@ -114,7 +114,7 @@ end
 function updateTimer(time, allSheep, player, level)
   if time.timeStart == false then
     --timer starts when player starts moving
-    if love.keyboard.isDown('up') then
+    if love.keyboard.isDown('up', 'w') then
       time.stime = love.timer.getTime()
       time.timeStart = true
     end
@@ -152,8 +152,8 @@ end
 
 function Body:updatePlayer(dt)
   if player.isAlive then
-    if love.keyboard.isDown("right", "left") then
-      if love.keyboard.isDown("right") then
+    if love.keyboard.isDown("left", "right", "a", "d") then
+      if love.keyboard.isDown("right", "d") then
         self.body:setAngularVelocity(self.turning*dt)
       else
         self.body:setAngularVelocity(-self.turning*dt)
@@ -162,7 +162,7 @@ function Body:updatePlayer(dt)
       self.body:setAngularVelocity(0)
     end
 
-    if love.keyboard.isDown("up") then
+    if love.keyboard.isDown("up", "w") then
       self.body:setLinearVelocity(math.cos(self.body:getAngle())*(self.speed*dt), math.sin(self.body:getAngle())*(self.speed*dt))
     else
       self.body:setLinearVelocity(0,0)
@@ -249,7 +249,7 @@ function loadSheep(world, spawnCoordinates, img)
     newSheep.body:setLinearDamping(10)
     newSheep.body:setAngularDamping(10)
     newSheep.fixture:setRestitution(0.9)
-    newSheep.speed = SPEED
+    newSheep.speed = SHEEPSPEED
     newSheep.isFree = true
     newSheep.img = img
     table.insert(allSheep, newSheep)
